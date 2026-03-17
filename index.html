@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Peravurani Memes — Post Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700;800;900&family=Noto+Serif+Tamil:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#e53935;--gold:#f5c518;--blue:#1a73e8;
+  --border:#e0e0e0;--bg:#f0f2f5;
+  --panel-w:430px;--bar-h:56px;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:'Inter',sans-serif;color:#222;display:flex;flex-direction:column}
+#topbar{height:var(--bar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{font-size:24px}
+.brand-main{font-size:16px;font-weight:700;color:#111;letter-spacing:0.3px}
+.brand-main span{color:var(--red)}
+.brand-sub{font-family:'Noto Sans Tamil',sans-serif;font-size:10px;color:#999;font-weight:600}
+.spacer{flex:1}
+.tbtn{padding:8px 16px;border-radius:6px;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.tbtn.outline{background:#fff;border:1.5px solid var(--border);color:#555}
+.tbtn.outline:hover{border-color:var(--red);color:var(--red)}
+.tbtn.primary{background:var(--blue);color:#fff}.tbtn.primary:hover{background:#1558b0}
+.tbtn.success{background:#2e7d32;color:#fff}.tbtn.success:hover{background:#1b5e20}
+#app{flex:1;display:flex;overflow:hidden;min-height:0}
+#config{width:var(--panel-w);background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.tab-bar{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);background:#fafafa}
+.tab-btn{padding:12px 4px;border:none;background:transparent;font-size:12px;font-weight:600;color:#888;cursor:pointer;border-bottom:3px solid transparent;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'Inter',sans-serif}
+.tab-btn .ic{font-size:17px}
+.tab-btn:hover{color:#333;background:#f5f5f5}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);background:#fff}
+.tab-panel{display:none;flex:1;overflow-y:auto;padding:16px;flex-direction:column;gap:14px;min-height:0}
+.tab-panel.active{display:flex}
+.tab-panel::-webkit-scrollbar{width:4px}
+.tab-panel::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}
+.stitle{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding-bottom:6px;border-bottom:2px solid;display:flex;align-items:center;gap:5px}
+.stitle.blue{color:var(--blue);border-color:var(--blue)}
+.stitle.gold{color:#b8860b;border-color:var(--gold)}
+.stitle.red{color:var(--red);border-color:var(--red)}
+.stitle.green{color:#2e7d32;border-color:#2e7d32}
+.block{display:flex;flex-direction:column;gap:8px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:11px;font-weight:600;color:#555}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input[type="file"]{padding:9px 10px;border:1.5px dashed #ccc;border-radius:7px;background:#fafafa;font-size:12px;cursor:pointer;width:100%}
+input[type="file"]:hover{border-color:var(--blue)}
+input[type="text"],textarea,select{padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'Noto Sans Tamil','Inter',sans-serif;outline:none;transition:border 0.15s;width:100%;color:#333;background:#fff}
+input[type="text"]:focus,textarea:focus,select:focus{border-color:var(--blue)}
+textarea{resize:vertical;min-height:60px;line-height:1.5}
+input[type="color"]{width:36px;height:32px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;padding:2px;background:#fff}
+input[type="number"]{padding:7px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;width:70px;outline:none;text-align:center;color:#333}
+input[type="number"]:focus{border-color:var(--blue)}
+.sl-wrap{display:flex;flex-direction:column;gap:4px}
+.sl-head{display:flex;justify-content:space-between;align-items:center}
+.sl-lbl{font-size:11px;font-weight:600;color:#555}
+.sl-val{font-size:11px;font-weight:700;color:var(--blue);min-width:40px;text-align:right}
+input[type="range"]{-webkit-appearance:none;width:100%;height:5px;background:#e0e0e0;border-radius:5px;outline:none;cursor:pointer}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--blue);border-radius:50%;cursor:pointer}
+input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--blue);border-radius:50%;cursor:pointer;border:none}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lbl{font-size:11px;font-weight:600;color:#555;white-space:nowrap}
+.style-btns{display:flex;gap:4px}
+.sbtn{width:30px;height:30px;border:1.5px solid var(--border);border-radius:5px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:all 0.15s;color:#555}
+.sbtn:hover{border-color:var(--blue);color:var(--blue)}
+.sbtn.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.align-btns{display:flex;gap:4px}
+.albtn{flex:1;padding:6px;border:1.5px solid var(--border);border-radius:5px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all 0.15s;color:#555}
+.albtn:hover{border-color:var(--blue);color:var(--blue)}
+.albtn.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.hint{font-size:11px;color:#aaa;line-height:1.5}
+.abtn{padding:8px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;color:#555;background:#fff;width:100%;font-family:'Inter',sans-serif}
+.abtn:hover{border-color:var(--blue);color:var(--blue);background:#f0f7ff}
+#ad-list{max-height:220px;overflow-y:auto;border:1.5px solid var(--border);border-radius:7px;background:#fff}
+#ad-list::-webkit-scrollbar{width:4px}
+#ad-list::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}
+.ad-item{padding:10px 14px;cursor:pointer;font-size:13px;font-weight:500;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;gap:8px;transition:background 0.12s;color:#333}
+.ad-item:last-child{border-bottom:none}
+.ad-item:hover{background:#f0f7ff}
+.ad-item.selected{background:#e8f0fe;color:var(--blue);font-weight:700}
+.ad-item .ad-dot{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0}
+.ad-item.selected .ad-dot{background:var(--blue)}
+#preview-panel{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 16px;overflow-y:auto;background:#e8eaed;gap:14px;min-width:0}
+#preview-panel::-webkit-scrollbar{width:5px}
+#preview-panel::-webkit-scrollbar-thumb{background:#ccc;border-radius:5px}
+.preview-label{font-size:13px;font-weight:700;color:#666;display:flex;align-items:center;gap:6px}
+.size-badge{background:#ddd;color:#555;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+#canvas-outer{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.18);max-width:100%;width:fit-content}
+#post-card{width:600px;max-width:100%;background:#fff;overflow:hidden;position:relative;font-family:'Noto Sans Tamil',sans-serif}
+#card-photo-zone{position:relative;width:100%;height:420px;background:#fff;overflow:hidden}
+#card-photo-zone::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to bottom,#ffffff 0%,rgba(255,255,255,0) var(--gp,40%),#000000 100%)}
+#card-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;z-index:0}
+#card-no-photo{position:absolute;inset:0;z-index:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:linear-gradient(to bottom,#fff 0%,#000 100%)}
+#card-no-photo .npi{font-size:36px;opacity:0.2}
+#card-no-photo .npt{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.2);text-transform:uppercase;font-family:'Inter',sans-serif}
+#card-watermark{position:absolute;z-index:2;pointer-events:none;font-family:'Inter',sans-serif;font-weight:800;letter-spacing:4px;color:rgba(255,255,255,0.1);text-transform:uppercase;white-space:nowrap;left:50%;top:55%;transform:translate(-50%,-50%);font-size:22px}
+#card-location{position:absolute;z-index:5;display:inline-flex;align-items:center;gap:5px;background:#fff;border-radius:20px;padding:5px 14px;font-size:14px;font-weight:700;color:#333;box-shadow:0 2px 8px rgba(0,0,0,0.15);white-space:nowrap;pointer-events:none;left:3%;top:4%}
+.loc-pin{color:var(--red);font-size:14px}
+#card-logo-wrap{position:absolute;z-index:5;pointer-events:none;display:flex;align-items:center;right:2%;top:4%}
+#card-logo-img{height:44px;width:auto;object-fit:contain;display:none;max-width:130px}
+#card-logo-fallback{font-family:'Noto Serif Tamil',serif;font-size:13px;font-weight:700;color:var(--red);background:#fff8f0;padding:5px 10px;border-radius:6px;border:1.5px solid var(--gold);display:none}
+#card-headline{position:absolute;z-index:3;left:50%;top:72%;transform:translate(-50%,-50%);text-align:center;width:90%;pointer-events:none}
+#card-headline-text{font-size:50px;font-weight:900;color:var(--gold);text-shadow:2px 3px 0 #000,0 0 20px rgba(0,0,0,0.8);line-height:1.2;display:block;word-break:break-word;font-family:'Noto Sans Tamil',sans-serif}
+#card-desc{position:absolute;z-index:3;font-family:'Noto Sans Tamil',sans-serif;left:50%;top:89%;transform:translate(-50%,-50%);text-align:left;width:88%;pointer-events:none;font-size:20px;font-weight:400;color:#fff;line-height:1.6;word-break:break-word}
+#card-contact-bar{background:#000;color:#fff;display:flex;align-items:center;padding:9px 16px;gap:10px;font-size:13px;font-weight:500;position:relative;z-index:4}
+#contact-text{flex:1;font-size:13px;font-family:'Noto Sans Tamil',sans-serif}
+#date-pill{background:var(--gold);color:#000;font-weight:800;padding:4px 12px;border-radius:4px;font-size:12px;white-space:nowrap;flex-shrink:0;font-family:'Inter',sans-serif;letter-spacing:0.5px}
+#card-ad-banner{width:100%;display:none;overflow:hidden;position:relative;z-index:4}
+#card-ad-banner img{width:100%;display:block}
+.dl-row{display:flex;gap:10px;width:100%;max-width:600px}
+.dl-btn{flex:1;padding:12px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-family:'Inter',sans-serif;transition:all 0.15s}
+.dl-btn.png{background:var(--blue);color:#fff}
+.dl-btn.jpg{background:#e53935;color:#fff}
+.dl-btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.dl-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+@media(max-width:900px){html,body{overflow:auto;height:auto}#app{flex-direction:column;overflow:visible;height:auto}#config{width:100%;order:2;border-right:none;border-top:1px solid var(--border);overflow:visible}.tab-panel{overflow:visible;max-height:none}#preview-panel{order:1;overflow:visible;padding:12px 8px}#post-card{width:100%!important}#canvas-outer{width:100%}.dl-row{max-width:100%}}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div class="brand">
+    <div class="brand-icon">📰</div>
+    <div>
+      <div class="brand-main">Peravurani <span>Memes</span></div>
+      <div class="brand-sub">பேராவூரணியின் குரல் — Post Generator</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <button class="tbtn outline" onclick="resetAll()">🔄 Reset</button>
+  <button class="tbtn success" onclick="downloadPNG()">⬇ PNG</button>
+  <button class="tbtn primary" onclick="downloadJPG()">⬇ JPG</button>
+</div>
+<div id="app">
+  <div id="config">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showTab('image',this)"><span class="ic">🖼</span>Image</button>
+      <button class="tab-btn" onclick="showTab('text',this)"><span class="ic">✍</span>Text</button>
+      <button class="tab-btn" onclick="showTab('info',this)"><span class="ic">📌</span>Info</button>
+      <button class="tab-btn" onclick="showTab('footer',this)"><span class="ic">📢</span>Footer</button>
+    </div>
+    <!-- IMAGE TAB -->
+    <div class="tab-panel active" id="tab-image">
+      <div class="stitle blue">📷 Upload Photo</div>
+      <div class="block">
+        <input type="file" id="file-bg" accept="image/*" onchange="setBg(event)">
+        <p class="hint">Upload your news photo. It appears above the gradient.</p>
+      </div>
+      <div class="stitle blue">🌅 Gradient Position</div>
+      <div class="block">
+        <div class="sl-wrap">
+          <div class="sl-head"><span class="sl-lbl">White → Black fade starts at</span><span class="sl-val" id="v-grad">40%</span></div>
+          <input type="range" id="sl-grad" min="0" max="100" value="40" oninput="updateGrad()">
+        </div>
+      </div>
+      <div class="stitle blue">🔧 Image Adjustments</div>
+      <div class="block">
+        <div class="two">
+          <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Width</span><span class="sl-val" id="v-iw">100%</span></div><input type="range" id="sl-iw" min="50" max="250" value="100" oninput="updateImgPos()"></div>
+          <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Height</span><span class="sl-val" id="v-ih">100%</span></div><input type="range" id="sl-ih" min="50" max="250" value="100" oninput="updateImgPos()"></div>
+        </div>
+        <div class="two">
+          <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Move X</span><span class="sl-val" id="v-ix">0</span></div><input type="range" id="sl-ix" min="-300" max="300" value="0" oninput="updateImgPos()"></div>
+          <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Move Y</span><span class="sl-val" id="v-iy">0</span></div><input type="range" id="sl-iy" min="-300" max="300" value="0" oninput="updateImgPos()"></div>
+        </div>
+      </div>
+      <div class="stitle blue">📐 Photo Zone Height</div>
+      <div class="block">
+        <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Height</span><span class="sl-val" id="v-ph">420px</span></div><input type="range" id="sl-ph" min="200" max="700" value="420" oninput="updatePhotoH()"></div>
+      </div>
+      <div class="stitle blue">💧 Watermark</div>
+      <div class="block">
+        <input type="text" id="watermark-text" value="PERAVURANI MEMES" oninput="updateWatermark()">
+        <div class="two">
+          <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Size</span><span class="sl-val" id="v-wmfs">22px</span></div><input type="range" id="sl-wmfs" min="8" max="60" value="22" oninput="updateWatermark()"></div>
+          <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Opacity</span><span class="sl-val" id="v-wmop">10%</span></div><input type="range" id="sl-wmop" min="2" max="50" value="10" oninput="updateWatermark()"></div>
+        </div>
+      </div>
+    </div>
+    <!-- TEXT TAB -->
+    <div class="tab-panel" id="tab-text">
+      <div class="stitle gold">📰 TITLE (தலைப்பு)</div>
+      <div class="block">
+        <textarea id="txt-title" rows="3" oninput="updateTitle()">தலைப்புச் செய்தி</textarea>
+        <div class="row">
+          <input type="color" id="col-title" value="#f5c518" oninput="updateTitleStyle()">
+          <input type="number" id="num-tfs" value="50" min="16" max="90" oninput="syncTitleSize(this.value)">
+          <div class="style-btns">
+            <button class="sbtn on" id="sbtn-tb" onclick="toggleStyle('bold')" title="Bold"><b>B</b></button>
+            <button class="sbtn" id="sbtn-ti" onclick="toggleStyle('italic')" title="Italic"><i>I</i></button>
+            <button class="sbtn on" id="sbtn-ts" onclick="toggleStyle('shadow')" title="Shadow">S</button>
+          </div>
+        </div>
+        <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Size</span><span class="sl-val" id="v-tfs">50px</span></div><input type="range" id="sl-tfs" min="16" max="90" value="50" oninput="syncTitleSize(this.value)"></div>
+        <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Y Position</span><span class="sl-val" id="v-ty">72%</span></div><input type="range" id="sl-ty" min="20" max="96" value="72" oninput="updateTitlePos()"></div>
+      </div>
+      <div class="stitle blue">📝 DESCRIPTION (விவரம்)</div>
+      <div class="block">
+        <textarea id="txt-desc" rows="3" oninput="updateDesc()">செய்தி விவரம் இங்கே...</textarea>
+        <div class="row">
+          <input type="color" id="col-desc" value="#ffffff" oninput="updateDescStyle()">
+          <input type="number" id="num-dfs" value="20" min="10" max="50" oninput="updateDescStyle()">
+        </div>
+        <div class="align-btns">
+          <button class="albtn" id="al-l" onclick="setDescAlign('left',this)">&#9776; Left</button>
+          <button class="albtn on" id="al-c" onclick="setDescAlign('center',this)">☰ Center</button>
+          <button class="albtn" id="al-r" onclick="setDescAlign('right',this)">&#9776; Right</button>
+        </div>
+        <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Y Position</span><span class="sl-val" id="v-dy">89%</span></div><input type="range" id="sl-dy" min="20" max="99" value="89" oninput="updateDescPos()"></div>
+      </div>
+    </div>
+    <!-- INFO TAB -->
+    <div class="tab-panel" id="tab-info">
+      <div class="stitle red">📍 Location</div>
+      <div class="block">
+        <input type="text" id="info-location" value="பேராவூரணி" oninput="updateLocation()">
+        <div class="two">
+          <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">X</span><span class="sl-val" id="v-lx">3%</span></div><input type="range" id="sl-lx" min="0" max="85" value="3" oninput="updateLocPos()"></div>
+          <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Y</span><span class="sl-val" id="v-ly">4%</span></div><input type="range" id="sl-ly" min="0" max="85" value="4" oninput="updateLocPos()"></div>
+        </div>
+        <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Font size</span><span class="sl-val" id="v-lfs">14px</span></div><input type="range" id="sl-lfs" min="9" max="26" value="14" oninput="updateLocStyle()"></div>
+      </div>
+      <div class="stitle red">📅 Date</div>
+      <div class="block">
+        <input type="text" id="info-date" placeholder="auto today" oninput="updateDate()">
+        <p class="hint">Leave empty to auto-fill today's date. Shown in footer bar.</p>
+        <div class="row">
+          <span class="lbl">Pill BG</span><input type="color" id="col-date-bg" value="#f5c518" oninput="updateDateStyle()">
+          <span class="lbl">Text</span><input type="color" id="col-date-fg" value="#000000" oninput="updateDateStyle()">
+        </div>
+      </div>
+      <div class="stitle red">🏷 Channel Logo</div>
+      <div class="block">
+        <input type="file" id="file-logo" accept="image/*" onchange="setLogo(event)">
+        <p class="hint">PNG with transparent background recommended</p>
+        <button class="abtn" onclick="useTextLogo()">↺ Use text logo</button>
+        <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Logo size</span><span class="sl-val" id="v-ls">44px</span></div><input type="range" id="sl-ls" min="20" max="120" value="44" oninput="updateLogoSize()"></div>
+        <div class="two">
+          <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">X pos</span><span class="sl-val" id="v-lgx">84%</span></div><input type="range" id="sl-lgx" min="0" max="90" value="84" oninput="updateLogoPos()"></div>
+          <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Y pos</span><span class="sl-val" id="v-lgy">4%</span></div><input type="range" id="sl-lgy" min="0" max="85" value="4" oninput="updateLogoPos()"></div>
+        </div>
+      </div>
+      <div class="stitle red">📞 Contact Bar</div>
+      <div class="block">
+        <input type="text" id="info-contact" value="விளம்பரம் மற்றும் புகார் தொடர்புக்கு : +91 9385933465" oninput="updateContact()">
+        <div class="row">
+          <span class="lbl">Bar BG</span><input type="color" id="col-bar-bg" value="#000000" oninput="updateBarStyle()">
+          <span class="lbl">Text</span><input type="color" id="col-bar-fg" value="#ffffff" oninput="updateBarStyle()">
+        </div>
+      </div>
+    </div>
+    <!-- FOOTER TAB -->
+    <div class="tab-panel" id="tab-footer">
+      <div class="stitle green">📢 Select Footer Ad</div>
+      <div class="block">
+        <p class="hint">Select an advertiser or upload a custom banner image.</p>
+        <div id="ad-list">
+          <div class="ad-item selected" data-id="none" onclick="selectAd(this)"><div class="ad-dot"></div>No Ad</div>
+          <div class="ad-item" data-id="peravurani" onclick="selectAd(this)"><div class="ad-dot"></div>Peravurani Ads</div>
+          <div class="ad-item" data-id="cutecakes" onclick="selectAd(this)"><div class="ad-dot"></div>Cute Cakes</div>
+          <div class="ad-item" data-id="royalenfield" onclick="selectAd(this)"><div class="ad-dot"></div>Royal Enfield</div>
+          <div class="ad-item" data-id="abinesh" onclick="selectAd(this)"><div class="ad-dot"></div>Abinesh Media Works</div>
+          <div class="ad-item" data-id="leos" onclick="selectAd(this)"><div class="ad-dot"></div>Leos</div>
+          <div class="ad-item" data-id="national" onclick="selectAd(this)"><div class="ad-dot"></div>National</div>
+          <div class="ad-item" data-id="state" onclick="selectAd(this)"><div class="ad-dot"></div>State</div>
+          <div class="ad-item" data-id="aj" onclick="selectAd(this)"><div class="ad-dot"></div>AJ</div>
+          <div class="ad-item" data-id="rajainba" onclick="selectAd(this)"><div class="ad-dot"></div>Raja Inba</div>
+          <div class="ad-item" data-id="durga" onclick="selectAd(this)"><div class="ad-dot"></div>Durga</div>
+          <div class="ad-item" data-id="custom" onclick="selectAd(this)"><div class="ad-dot"></div>📤 Upload Custom Banner</div>
+        </div>
+        <div id="custom-upload-wrap" style="display:none;margin-top:6px">
+          <input type="file" id="file-ad-custom" accept="image/*" onchange="loadCustomAd(event)">
+        </div>
+        <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Banner height</span><span class="sl-val" id="v-adh">120px</span></div><input type="range" id="sl-adh" min="50" max="350" value="120" oninput="updateAdHeight()"></div>
+        <div class="sl-wrap"><div class="sl-head"><span class="sl-lbl">Bottom position offset</span><span class="sl-val" id="v-adoff">0px</span></div><input type="range" id="sl-adoff" min="-50" max="50" value="0" oninput="updateAdOffset()"></div>
+      </div>
+    </div>
+  </div>
+  <!-- PREVIEW -->
+  <div id="preview-panel">
+    <div class="preview-label">🖼 Live Preview <span class="size-badge">600px</span></div>
+    <div id="canvas-outer">
+      <div id="post-card">
+        <div id="card-photo-zone">
+          <div id="card-no-photo">
+            <div class="npi">🖼️</div>
+            <div class="npt">Upload a Photo</div>
+          </div>
+          <img id="card-bg-img" src="" alt="">
+          <div id="card-watermark">PERAVURANI MEMES</div>
+          <div id="card-location"><span class="loc-pin">📍</span><span id="loc-label">பேராவூரணி</span></div>
+          <div id="card-logo-wrap">
+            <img id="card-logo-img" src="" alt="">
+            <span id="card-logo-fallback">பேராவூரணி மீம்ஸ்</span>
+          </div>
+          <div id="card-headline"><span id="card-headline-text">தலைப்புச் செய்தி</span></div>
+          <div id="card-desc">செய்தி விவரம் இங்கே...</div>
+        </div>
+        <div id="card-contact-bar">
+          <span id="contact-text">விளம்பரம் மற்றும் புகார் தொடர்புக்கு : +91 9385933465</span>
+          <span id="date-pill">17.03.2026</span>
+        </div>
+        <div id="card-ad-banner"></div>
+      </div>
+    </div>
+    <div class="dl-row">
+      <button class="dl-btn png" id="btn-dl-png" onclick="downloadPNG()">⬇ Download PNG</button>
+      <button class="dl-btn jpg" id="btn-dl-jpg" onclick="downloadJPG()">⬇ Download JPG</button>
+    </div>
+    <p style="font-size:11px;color:#999;text-align:center">High resolution 2× export</p>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const S={bold:true,italic:false,shadow:true,descAlign:'center',currentAd:'none'};
+const ADS={
+  peravurani:{bg:'#1a237e',fg:'#fff',label:'Peravurani Ads — பேராவூரணி'},
+  cutecakes:{bg:'#f9a825',fg:'#c62828',label:'Cute Cakes — FREE DELIVERY • Keep Calm Eat Cake'},
+  royalenfield:{bg:'#1b1b1b',fg:'#c8a000',label:'Royal Enfield — Peravurani Showroom'},
+  abinesh:{bg:'#0d47a1',fg:'#fff',label:'Abinesh Media Works — Peravurani'},
+  leos:{bg:'#880e4f',fg:'#fff',label:'Leos — Peravurani'},
+  national:{bg:'#1a237e',fg:'#ffd600',label:'National — Peravurani'},
+  state:{bg:'#004d40',fg:'#fff',label:'State — Peravurani'},
+  aj:{bg:'#bf360c',fg:'#fff',label:'AJ — Peravurani'},
+  rajainba:{bg:'#6a1b9a',fg:'#fff',label:'Raja Inba — Peravurani'},
+  durga:{bg:'#e65100',fg:'#fff',label:'Durga — Peravurani'},
+};
+function pad(n){return String(n).padStart(2,'0');}
+function today(){const d=new Date();return pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear();}
+function v(id){return parseInt(document.getElementById(id).value);}
+function el(id){return document.getElementById(id);}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  el('date-pill').textContent=today();
+  el('info-date').placeholder=today();
+  updateGrad(); updateWatermark(); updateTitleStyle(); updateDescStyle();
+  // set desc to center by default
+  el('card-desc').style.textAlign='center';
+});
+
+function showTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  el('tab-'+id).classList.add('active'); btn.classList.add('active');
+}
+
+// BG IMAGE
+function setBg(e){
+  const file=e.target.files[0];if(!file)return;
+  const img=el('card-bg-img');
+  img.src=URL.createObjectURL(file);img.style.display='block';
+  el('card-no-photo').style.display='none';
+  el('sl-iw').value=100;el('sl-ih').value=100;el('sl-ix').value=0;el('sl-iy').value=0;
+  updateImgPos();
+}
+function updateImgPos(){
+  const img=el('card-bg-img');
+  const w=v('sl-iw'),h=v('sl-ih'),x=v('sl-ix'),y=v('sl-iy');
+  el('v-iw').textContent=w+'%';el('v-ih').textContent=h+'%';
+  el('v-ix').textContent=x;el('v-iy').textContent=y;
+  img.style.width=w+'%';img.style.height=h+'%';
+  img.style.left='calc(50% - '+w/2+'% + '+x+'px)';
+  img.style.top='calc(50% - '+h/2+'% + '+y+'px)';
+}
+
+// GRADIENT
+function updateGrad(){
+  const pos=v('sl-grad');
+  el('v-grad').textContent=pos+'%';
+  el('card-photo-zone').style.setProperty('--gp',pos+'%');
+}
+
+// PHOTO HEIGHT
+function updatePhotoH(){
+  const h=v('sl-ph');
+  el('v-ph').textContent=h+'px';
+  el('card-photo-zone').style.height=h+'px';
+}
+
+// WATERMARK
+function updateWatermark(){
+  const t=el('watermark-text').value;
+  const s=v('sl-wmfs'),op=v('sl-wmop')/100;
+  el('v-wmfs').textContent=s+'px';el('v-wmop').textContent=v('sl-wmop')+'%';
+  const wm=el('card-watermark');
+  wm.textContent=t;wm.style.fontSize=s+'px';
+  wm.style.color='rgba(255,255,255,'+op+')';
+}
+
+// TITLE
+function updateTitle(){el('card-headline-text').textContent=el('txt-title').value;}
+function syncTitleSize(val){
+  const n=parseInt(val)||50;
+  el('num-tfs').value=n;el('sl-tfs').value=n;el('v-tfs').textContent=n+'px';
+  el('card-headline-text').style.fontSize=n+'px';
+}
+function updateTitleStyle(){
+  const ht=el('card-headline-text');
+  const c=el('col-title').value;
+  const s=parseInt(el('num-tfs').value)||50;
+  el('sl-tfs').value=s;el('v-tfs').textContent=s+'px';
+  ht.style.color=c;ht.style.fontSize=s+'px';
+  ht.style.fontWeight=S.bold?'900':'400';
+  ht.style.fontStyle=S.italic?'italic':'normal';
+  ht.style.textShadow=S.shadow?'2px 3px 0 #000,0 0 20px rgba(0,0,0,0.8)':'none';
+}
+function toggleStyle(type){
+  if(type==='bold'){S.bold=!S.bold;el('sbtn-tb').classList.toggle('on',S.bold);}
+  if(type==='italic'){S.italic=!S.italic;el('sbtn-ti').classList.toggle('on',S.italic);}
+  if(type==='shadow'){S.shadow=!S.shadow;el('sbtn-ts').classList.toggle('on',S.shadow);}
+  updateTitleStyle();
+}
+function updateTitlePos(){
+  const y=v('sl-ty');el('v-ty').textContent=y+'%';
+  el('card-headline').style.top=y+'%';
+}
+
+// DESC
+function updateDesc(){el('card-desc').textContent=el('txt-desc').value;}
+function updateDescStyle(){
+  const d=el('card-desc');
+  d.style.color=el('col-desc').value;
+  const s=parseInt(el('num-dfs').value)||20;
+  d.style.fontSize=s+'px';
+}
+function setDescAlign(a,btn){
+  S.descAlign=a;
+  document.querySelectorAll('.albtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  el('card-desc').style.textAlign=a;
+}
+function updateDescPos(){
+  const y=v('sl-dy');el('v-dy').textContent=y+'%';
+  el('card-desc').style.top=y+'%';
+}
+
+// LOCATION
+function updateLocation(){el('loc-label').textContent=el('info-location').value;}
+function updateLocPos(){
+  const x=v('sl-lx'),y=v('sl-ly');
+  el('v-lx').textContent=x+'%';el('v-ly').textContent=y+'%';
+  const loc=el('card-location');
+  loc.style.left=x+'%';loc.style.top=y+'%';loc.style.right='auto';loc.style.bottom='auto';
+}
+function updateLocStyle(){
+  const s=v('sl-lfs');el('v-lfs').textContent=s+'px';
+  el('card-location').style.fontSize=s+'px';
+}
+
+// DATE
+function updateDate(){el('date-pill').textContent=el('info-date').value||today();}
+function updateDateStyle(){
+  el('date-pill').style.background=el('col-date-bg').value;
+  el('date-pill').style.color=el('col-date-fg').value;
+}
+
+// LOGO
+function setLogo(e){
+  const file=e.target.files[0];if(!file)return;
+  const url=URL.createObjectURL(file);
+  const h=v('sl-ls');
+  const img=el('card-logo-img');
+  img.src=url;img.style.display='block';img.style.height=h+'px';
+  el('card-logo-fallback').style.display='none';
+}
+function useTextLogo(){
+  el('card-logo-img').style.display='none';
+  el('card-logo-fallback').style.display='inline';
+  el('file-logo').value='';
+}
+function updateLogoSize(){
+  const h=v('sl-ls');el('v-ls').textContent=h+'px';
+  const img=el('card-logo-img');
+  if(img.style.display!=='none')img.style.height=h+'px';
+}
+function updateLogoPos(){
+  const x=v('sl-lgx'),y=v('sl-lgy');
+  el('v-lgx').textContent=x+'%';el('v-lgy').textContent=y+'%';
+  const wrap=el('card-logo-wrap');
+  wrap.style.right='auto';wrap.style.left=x+'%';wrap.style.top=y+'%';
+}
+
+// CONTACT BAR
+function updateContact(){el('contact-text').textContent=el('info-contact').value;}
+function updateBarStyle(){
+  el('card-contact-bar').style.background=el('col-bar-bg').value;
+  el('card-contact-bar').style.color=el('col-bar-fg').value;
+}
+
+// ADS
+function selectAd(item){
+  document.querySelectorAll('.ad-item').forEach(i=>i.classList.remove('selected'));
+  item.classList.add('selected');
+  const id=item.dataset.id;S.currentAd=id;
+  el('custom-upload-wrap').style.display=id==='custom'?'block':'none';
+  if(id==='none'){el('card-ad-banner').style.display='none';el('card-ad-banner').innerHTML='';return;}
+  if(id==='custom')return;
+  loadSVGAd(id);
+}
+function loadSVGAd(id){
+  const d=ADS[id];if(!d)return;
+  const h=v('sl-adh');
+  const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='600' height='${h}'><rect width='600' height='${h}' fill='${d.bg}'/><text x='300' y='${h*0.45}' dominant-baseline='middle' text-anchor='middle' font-family='Arial,sans-serif' font-size='20' font-weight='bold' fill='${d.fg}'>${d.label}</text><text x='300' y='${h*0.72}' dominant-baseline='middle' text-anchor='middle' font-family='Arial,sans-serif' font-size='11' fill='${d.fg}' opacity='0.5'>Advertisement • Peravurani Memes</text></svg>`;
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const img=new Image();
+  img.src=url;img.style.cssText='width:100%;display:block;height:'+h+'px;object-fit:cover';
+  const banner=el('card-ad-banner');
+  banner.innerHTML='';banner.appendChild(img);banner.style.display='block';
+}
+function loadCustomAd(e){
+  const file=e.target.files[0];if(!file)return;
+  const h=v('sl-adh');
+  const img=new Image();
+  img.src=URL.createObjectURL(file);
+  img.style.cssText='width:100%;display:block;height:'+h+'px;object-fit:cover';
+  const banner=el('card-ad-banner');
+  banner.innerHTML='';banner.appendChild(img);banner.style.display='block';
+}
+function updateAdHeight(){
+  const h=v('sl-adh');el('v-adh').textContent=h+'px';
+  const img=el('card-ad-banner').querySelector('img');
+  if(img)img.style.height=h+'px';
+  if(S.currentAd&&S.currentAd!=='none'&&S.currentAd!=='custom'&&ADS[S.currentAd])loadSVGAd(S.currentAd);
+}
+function updateAdOffset(){
+  const off=v('sl-adoff');el('v-adoff').textContent=off+'px';
+  el('card-ad-banner').style.marginTop=off+'px';
+}
+
+// RESET
+function resetAll(){if(!confirm('Reset all settings?'))return;location.reload();}
+
+// DOWNLOAD
+async function captureCard(){
+  return await html2canvas(el('post-card'),{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,imageTimeout:8000});
+}
+async function downloadPNG(){
+  const btn=el('btn-dl-png');btn.textContent='⏳ Generating...';btn.disabled=true;
+  try{const c=await captureCard();dl(c.toDataURL('image/png'),'peravurani-post.png');}
+  catch(e){alert('Download failed. Try again.');console.error(e);}
+  btn.textContent='⬇ Download PNG';btn.disabled=false;
+}
+async function downloadJPG(){
+  const btn=el('btn-dl-jpg');btn.textContent='⏳ Generating...';btn.disabled=true;
+  try{const c=await captureCard();dl(c.toDataURL('image/jpeg',0.95),'peravurani-post.jpg');}
+  catch(e){alert('Download failed. Try again.');console.error(e);}
+  btn.textContent='⬇ Download JPG';btn.disabled=false;
+}
+function dl(url,name){const a=document.createElement('a');a.href=url;a.download=name;a.click();}
+</script>
+</body>
+</html>
